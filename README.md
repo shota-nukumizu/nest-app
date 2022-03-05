@@ -87,7 +87,7 @@ describe('AppController', () => {
 以下のコマンドで`cats`プロジェクトを作成
 
 ```
-
+nest g resource cats
 ```
 
 # 余談
