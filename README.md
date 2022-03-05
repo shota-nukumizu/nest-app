@@ -10,7 +10,7 @@ $ npm run start:dev
 
 # コード
 
-`src/main.ts`
+`src/main.ts`：Nestアプリのインスタンスを作成するための中核ファイル
 
 ```ts
 // 開発者サーバを立ち上げる
@@ -24,7 +24,7 @@ async function bootstrap() {
 bootstrap();
 ```
 
-`src/app.service.ts`
+`src/app.service.ts`：Nestアプリのサービスを担う
 
 ```ts
 // ブラウザ上にHello Worldを表示させる
@@ -38,7 +38,7 @@ export class AppService {
 }
 ```
 
-`src/app.module.ts`
+`src/app.module.ts`：Nestアプリのモジュール管理
 
 ```ts
 // モジュール管理
@@ -54,7 +54,7 @@ import { AppService } from './app.service';
 export class AppModule {}
 ```
 
-`src/app.controller.spec.ts`
+`src/app.controller.spec.ts`：Nestアプリのユニットテスト(`unittest`)を行う
 
 ```ts
 // アプリケーション実行環境の管理
@@ -81,3 +81,7 @@ describe('AppController', () => {
   });
 });
 ```
+
+# 余談
+
+Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。
