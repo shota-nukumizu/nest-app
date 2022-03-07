@@ -30,6 +30,7 @@ bootstrap();
 // ブラウザ上にHello Worldを表示させる
 import { Injectable } from '@nestjs/common';
 
+// ブラウザに文字を表示させる関数
 @Injectable()
 export class AppService {
   getHello(): string {
