@@ -83,13 +83,29 @@ describe('AppController', () => {
 });
 ```
 
-# 新規プロジェクトの作成
+# セットアップ
 
-以下のコマンドで`cats`プロジェクトを作成
+まずは、`src`フォルダの中にあるファイルを以下の２つにする。それ以外のファイルはすべて削除。
 
 ```
-nest g resource cats
+app.module.ts
+main.ts
 ```
+
+`src/app.module.ts`
+
+```ts
+import { Module } from '@nestjs/common';
+
+@Module({
+  imports: [],
+})
+export class AppModule {}
+```
+
+# モジュール設定
+
+
 
 # 余談
 
