@@ -105,7 +105,18 @@ export class AppModule {}
 
 # モジュール設定
 
+## 手動でモジュールを設定する
 
+`src/auth/auth.module.ts`(手動で作成)
+
+```ts
+import { Module } from "@nestjs/common";
+
+@Module({
+  imports: [],
+})
+export class AuthModule {}
+```
 
 # 余談
 
