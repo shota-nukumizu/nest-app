@@ -254,6 +254,50 @@ export class AuthService {
 const service = new AuthService()
 ```
 
+# Controller制御
+
+`src/auth/auth.service.ts`
+
+```ts
+import { Injectable } from "@nestjs/common";
+
+@Injectable({})
+export class AuthService {
+    signup() {
+        return { msg: 'I have signed up' }
+    }
+
+    signin() {
+        return { msg: 'I have signed in' }
+    }
+}
+
+const service = new AuthService()
+```
+
+`src/auth/auth.controller.ts`
+
+```ts
+import { Controller, Post } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+
+@Controller('auth')
+export class AuthController {
+    constructor(private authService: AuthService) {
+    }
+
+    @Post('signup')
+    signup() {
+        return this.authService.signup()
+    }
+
+    @Post('signin')
+    signin() {
+        return this.authService.signin()
+    }
+}
+```
+
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
