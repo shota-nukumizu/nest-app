@@ -301,6 +301,35 @@ export class AuthController {
 }
 ```
 
+# prismaのインストール
+
+```
+npm add -D prisma@latest
+npm add @prisma/client
+npx prisma init
+```
+
+これらの手順を踏まえると、新規で`prisma/schema.prisma`ファイルが作成される。
+
+```prisma
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
+
+# 参考サイト
+
+* [Prisma](https://www.prisma.io/)
+* [Nest Tutorial - freeCodeCamp](https://youtu.be/GHTA143_b-s)
