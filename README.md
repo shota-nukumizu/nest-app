@@ -165,7 +165,93 @@ import { BookmarkModule } from './bookmark/bookmark.module';
   imports: [AuthModule, UserModule, BookmarkModule],
 })
 export class AppModule {}
+```
 
+# `AuthModule`の設定
+
+`auth`フォルダに`auth.controller.ts`と`auth.serive.ts`をそれぞれ新規作成する
+
+`src/auth/auth.controller.ts`
+
+```ts
+import { Controller } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+
+@Controller()
+
+export class AuthController {}
+```
+
+`src/auth/auth.service.ts`
+
+```ts
+import { Injectable } from "@nestjs/common";
+
+@Injectable({})
+
+export class AuthService {}
+```
+
+以上のファイルを編集した後、`src/auth/auth.module.ts`を新規作成する
+
+```ts
+import { Module } from "@nestjs/common";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+
+@Module({
+  controllers: [AuthController],
+  providers: [AuthService]
+})
+export class AuthModule {}
+```
+
+`src/auth/auth.service.ts`
+
+```ts
+import { Injectable } from "@nestjs/common";
+
+@Injectable({})
+
+export class AuthService {}
+
+// AuthServiceインスタンスを新規作成する
+const service = new AuthService()
+```
+
+`src/auth/auth.controller.ts`
+
+```ts
+import { Controller } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+
+@Controller()
+
+export class AuthController {
+  // authServiceをプライベート変数に設定することで、controllerとserviceを連携させる
+  constructor(private authService: AuthService) {
+  }
+}
+```
+
+`src/auth/auth.service.ts`
+
+```ts
+import { Injectable } from "@nestjs/common";
+
+@Injectable({})
+
+export class AuthService {
+    login() {
+
+    }
+
+    signup() {
+        
+    }
+}
+
+const service = new AuthService()
 ```
 
 # 余談
