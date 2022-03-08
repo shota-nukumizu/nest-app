@@ -118,6 +118,56 @@ import { Module } from "@nestjs/common";
 export class AuthModule {}
 ```
 
+ファイルを作成したあと、`src/app.module.ts`にアクセスしてプログラムを編集する
+
+```ts
+import { Module } from '@nestjs/common';
+import { AuthModule } from './auth/auth.module';
+
+@Module({
+  imports: [AuthModule],
+})
+
+export class AppModule {}
+```
+
+## 自動でモジュールを生成
+
+上記の設定は自動で行える。以下のコマンドを順番に実行する
+
+```
+nest g module user
+nest g module bookmark
+```
+
+そうすると、`src`フォルダの下にそれぞれ`user`と`bookmark`フォルダが作成される。その際に、`src/app.module.ts`の内容も自動で更新されるようになる
+
+▼出力結果
+
+```
+CREATE src/user/user.module.ts (81 bytes)
+UPDATE src/app.module.ts (216 bytes)
+
+CREATE src/bookmark/bookmark.module.ts (85 bytes)
+UPDATE src/app.module.ts (293 bytes)
+```
+
+`src/app.module.ts`(**自動で編集される**)
+
+```ts
+import { Module } from '@nestjs/common';
+import { AuthModule } from './auth/auth.module';
+// これらの部分が自動で編集されるようになる
+import { UserModule } from './user/user.module';
+import { BookmarkModule } from './bookmark/bookmark.module';
+
+@Module({
+  imports: [AuthModule, UserModule, BookmarkModule],
+})
+export class AppModule {}
+
+```
+
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
