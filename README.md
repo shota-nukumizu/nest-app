@@ -261,6 +261,7 @@ const service = new AuthService()
 ```ts
 import { Injectable } from "@nestjs/common";
 
+// AuthControllerへつなげる処理をここで簡潔にする。
 @Injectable({})
 export class AuthService {
     signup() {
@@ -278,23 +279,25 @@ const service = new AuthService()
 `src/auth/auth.controller.ts`
 
 ```ts
+// 基本的には、service側で行う処理を本ファイルで制御する、というのが普通のやり方である。
 import { Controller, Post } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {
-    }
+  // constructorで予めAuthServiceを設定しておく
+  constructor(private authService: AuthService) {
+  }
 
-    @Post('signup')
-    signup() {
-        return this.authService.signup()
-    }
+  @Post('signup')
+  signup() {
+      return this.authService.signup()
+  }
 
-    @Post('signin')
-    signin() {
-        return this.authService.signin()
-    }
+  @Post('signin')
+  signin() {
+      return this.authService.signin()
+  }
 }
 ```
 
