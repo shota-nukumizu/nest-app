@@ -254,6 +254,29 @@ export class AuthService {
 const service = new AuthService()
 ```
 
+# DockerでPostgreSQLの設定
+
+まず、新規で`docker-compose.yml`を作成する。
+
+`docker-compose.yml`
+
+```yml
+version: '3.8'
+services:
+  dev-db:
+    image: postgres:13
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+    networks:
+      - freecodecamp
+networks:
+  freecodecamp
+```
+
 # Controller制御
 
 `src/auth/auth.service.ts`
