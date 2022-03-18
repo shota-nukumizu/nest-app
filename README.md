@@ -383,6 +383,18 @@ model Bookmark {
 }
 ```
 
+`.env`(パスワードやデータベース設定名を文字列に挿入する)
+
+```env
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB (Preview) and CockroachDB (Preview).
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+DATABASE_URL="postgresql://postgres-0:password@localhost:5432/text?schema=public"
+```
+
 あとはこれらのモデルをDockerのPostgreSQLに接続するだけ。
 
 ```
@@ -404,6 +416,18 @@ Please make sure your database server is running at `localhost`:`5434`.
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
+
+# バグ修正
+
+## Docker✕Postgre環境構築でハマる
+
+```powershell
+docker pull postgres
+docker pull postgres:latest
+docker run --name postgres-0 -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres:latest # 最終的にコンテナを作成する
+```
+
+このような感じで実際にやってみたが、`localhost:5432`が起動せずデータベースをmigrateできない。
 
 # 参考サイト
 
