@@ -254,23 +254,6 @@ export class AuthService {
 const service = new AuthService()
 ```
 
-# DockerでPostgreSQLの設定
-
-まず、新規で`docker-compose.yml`を作成する。
-
-`docker-compose.yml`
-
-```yml
-version: '3.8'
-services:
-  dev-db:
-    image: postgres:14
-    ports:
-      - 5432:5432
-    environment:
-      POSTGRES_USER: postgres-0
-      POSTGRES_PASSWORD: password
-```
 
 # Controller制御
 
@@ -338,7 +321,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 ```
@@ -356,7 +339,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -392,25 +375,13 @@ model Bookmark {
 # Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB (Preview) and CockroachDB (Preview).
 # See the documentation for all the connection string options: https://pris.ly/d/connection-strings
 
-DATABASE_URL="postgresql://postgres-0:password@localhost:5432/text?schema=public"
+DATABASE_URL="file:./dev.db"
 ```
 
 あとはこれらのモデルをDockerのPostgreSQLに接続するだけ。
 
 ```
 npx prisma migrate dev
-```
-
-ちなみに、データベースが連携されていない場合は以下のようなコマンドが表示される。
-
-```
-Environment variables loaded from .env
-Prisma schema loaded from prisma\schema.prisma
-Datasource "db": PostgreSQL database "nest", schema "public" at "localhost:5434"
-
-Error: P1001: Can't reach database server at `localhost`:`5434`
-
-Please make sure your database server is running at `localhost`:`5434`.
 ```
 
 # 余談
@@ -427,7 +398,7 @@ docker pull postgres:latest
 docker run --name postgres-0 -e POSTGRES_PASSWORD=password -d -p 5432:5432 postgres:latest # 最終的にコンテナを作成する
 ```
 
-このような感じで実際にやってみたが、`localhost:5432`が起動せずデータベースをmigrateできない。
+このような感じで実際にやってみたが、`localhost:5432`が起動せずデータベースをmigrateできない。**しかし、これはデータベースをsqliteにしたら何の問題もなく解決した。**
 
 # 参考サイト
 
