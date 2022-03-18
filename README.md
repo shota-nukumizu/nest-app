@@ -388,6 +388,24 @@ model Bookmark {
 }
 ```
 
+あとはこれらのモデルをDockerのPostgreSQLに接続するだけ。
+
+```
+npx prisma migrate dev
+```
+
+ちなみに、データベースが連携されていない場合は以下のようなコマンドが表示される。
+
+```
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "nest", schema "public" at "localhost:5434"
+
+Error: P1001: Can't reach database server at `localhost`:`5434`
+
+Please make sure your database server is running at `localhost`:`5434`.
+```
+
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
