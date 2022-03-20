@@ -368,6 +368,8 @@ model Bookmark {
 
 `.env`(パスワードやデータベース設定名を文字列に挿入する)
 
+データベースを作成してパスを通し、`npx`コマンドでデータベースをマイグレートする。
+
 ```env
 # Environment variables declared in this file are automatically made available to Prisma.
 # See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
@@ -378,15 +380,60 @@ model Bookmark {
 DATABASE_URL="file:./dev.db"
 ```
 
-あとはこれらのモデルをDockerのPostgreSQLに接続するだけ。
-
 ```
 npx prisma migrate dev
+```
+
+これらのコマンドを実行すると、以下のようなプロダクトが自動で出力される。
+
+```powershell
+/> tree prisma
+```
+
+```powershell
+│  dev.db
+│  dev.db-journal
+│  schema.prisma
+│
+└─migrations
+    │  migration_lock.toml
+    │
+    └─20220318044104_init # 実行された日時のフォルダが自動で生成される
+            migration.sql # schema.prismaファイルを基準に生成されたSQLファイル
+```
+
+`migration.sql`
+
+```sql
+-- Prismaではコマンド入力でSQLファイルが自動で出力される
+
+-- CreateTable
+CREATE TABLE "User" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "email" TEXT NOT NULL,
+    "hash" TEXT NOT NULL,
+    "firstname" TEXT,
+    "lastname" TEXT
+);
+
+-- CreateTable
+CREATE TABLE "Bookmark" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "link" TEXT NOT NULL
+);
 ```
 
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
+
+今回で初めてPrismaを触ってみたが、コマンド入力だけでプロジェクトをインストールしたり、自動でデータベースやSQLファイルを生成できたりなどデータベース設計が非常に楽だ。(**直感的にDjangoのような感じで操作できるのは非常にありがたい**)
 
 # バグ修正
 
