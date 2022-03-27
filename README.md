@@ -429,6 +429,38 @@ CREATE TABLE "Bookmark" (
 );
 ```
 
+データベースの設計が終了した後、以下のコマンドでPrismaを本プロジェクトで有効にする
+
+```
+npx prisma generate
+```
+
+▼出力結果
+
+```
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+✔ Generated Prisma Client (3.10.0 | library) to .\node_modules\@prisma\client in 85ms
+You can now start using Prisma Client in your code. Reference: https://pris.ly/d/client
+
+```
+import { PrismaClient } from '@prisma/client'
+const prisma = new PrismaClient()
+```
+
+```
+
+このコマンドを入力すれば簡単にデータベースの中身を出力できる
+
+```
+npx prisma studio
+```
+
+`http://localhost:5555`にアクセスすればこのような感じでデータベースを出力できる
+
+![データベース表示デモ](demo.png)
+
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
@@ -446,6 +478,15 @@ docker run --name postgres-0 -e POSTGRES_PASSWORD=password -d -p 5432:5432 postg
 ```
 
 このような感じで実際にやってみたが、`localhost:5432`が起動せずデータベースをmigrateできない。**しかし、これはデータベースをsqliteにしたら何の問題もなく解決した。**
+
+# Prismaアップデート
+
+以下のコマンドでPrismaをアップデートできる。試しにやってみよう。
+
+```
+npm i --save-dev prisma@latest
+npm i @prisma/client@latest  
+```
 
 # 参考サイト
 
