@@ -605,6 +605,92 @@ export class AuthController {
 }
 ```
 
+# DTO認証を用いる
+
+DTO(`Data Transfer Object`)とは、オブジェクト指向プログラミングでよく用いられる典型的なオブジェクトの設計パターンである。**関連するデータを一つにまとめて、データの格納や呼び出しのためのメソッドを定義したオブジェクトのこと。**
+
+DTOを活用することで、同じプログラミング言語や実行環境などで動作するプログラム間でデータを効率よく、かつ互いに利用しやすい形式で明け渡す手段としてよく利用される。
+
+`auth.controller.ts`
+
+```ts
+import { Controller, Post, Req, Body } from "@nestjs/common";
+import { Request } from "express";
+import { AuthService } from "./auth.service";
+
+@Controller('auth')
+export class AuthController {
+    constructor(private authService: AuthService) {
+    }
+
+    // signup関数を多少いじってみる
+    @Post('signup')
+    signup(@Body() dto: any) {
+        console.log({
+            dto,
+        })
+        return this.authService.signup()
+    }
+
+    @Post('signin')
+    signin() {
+        return this.authService.signin()
+    }
+}
+```
+
+新規で`auth/dto`フォルダの中に以下の２つのファイルを作成する
+
+```ts
+auth.dto.ts
+index.ts
+```
+
+`auth/dto/auth.dto.ts`
+
+```ts
+// 認証に使うデータ(emailとpassword)をinterfaceを使って定義する
+export interface AuthDto {
+    email: string
+    password: string
+}
+```
+
+`auth/dto/index.ts`
+
+```ts
+export * from '../dto/auth.dto'
+```
+
+定義が終了したら、`auth.controller.ts`ファイルを以下のように編集する
+
+```ts
+// importするライブラリを多少変更する
+import { Controller, Post, Body } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { AuthDto } from './dto';
+
+@Controller('auth')
+export class AuthController {
+    constructor(private authService: AuthService) {
+    }
+
+    // データの登録を行う
+    @Post('signup')
+    signup(@Body() dto: AuthDto) {
+        console.log({
+            dto,
+        })
+        return this.authService.signup()
+    }
+
+    @Post('signin')
+    signin() {
+        return this.authService.signin()
+    }
+}
+```
+
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
