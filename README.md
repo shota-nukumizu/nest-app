@@ -736,8 +736,77 @@ async function bootstrap() {
   await app.listen(3000);
 }
 bootstrap();
-
 ```
+
+## NestJSにおけるGlobal Pipes
+
+`main.ts`
+
+```ts
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  // whitelistをtrueにして認証済みのユーザだけを表示させる
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true
+  }))
+  await app.listen(3000);
+}
+bootstrap();
+```
+
+`auth.service.ts`
+
+```ts
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from '../prisma/prisma.service';
+import { AuthDto } from './dto/auth.dto';
+
+@Injectable()
+export class AuthService {
+    constructor(private prisma: PrismaService) {}
+    signup(dto: AuthDto) {
+        return { msg: 'I have signed up' }
+    }
+
+    signin() {
+        return { msg: 'I have signed in' }
+    }
+}
+```
+
+`auth.controller.ts`
+
+```ts
+import { Controller, Post, Body } from "@nestjs/common";
+import { AuthService } from "./auth.service";
+import { AuthDto } from './dto';
+
+@Controller('auth')
+export class AuthController {
+    constructor(private authService: AuthService) {
+    }
+
+    @Post('signup')
+    signup(@Body() dto: AuthDto) {
+        return this.authService.signup(dto)
+    }
+
+    @Post('signin')
+    signin() {
+        return this.authService.signin()
+    }
+}
+```
+
+これでメールとパスワードをデータベースに保存する実装は終了する
+
+# パスワードのハッシュ化
+
+
 
 # 余談
 
