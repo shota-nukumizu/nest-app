@@ -806,7 +806,167 @@ export class AuthController {
 
 # パスワードのハッシュ化
 
+ハッシュ化とは、元のデータから一定の計算手順に従ってハッシュ値と呼ばれる規則性のない固定長の値を求めて、その値によって元のデータを置換すること。パスワードの保管でよく用いられる。**パスワードをハッシュ化するにはハッシュ関数を用いる。**
 
+**パスワードを保管する際にパスワードそのものではなくパスワードのハッシュ値を保管し、認証の際には入力値のハッシュ値と比較する手法（パスワードのハッシュ化）がよく用いられる。**
+
+パスワードをハッシュ化する際には、[`argon2`](https://www.npmjs.com/package/argon2)を活用する。
+
+```
+npm install argon2
+```
+
+# サインアップの実装
+
+`auth.serivice.ts`
+
+```ts
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from '../prisma/prisma.service';
+import { AuthDto } from './dto/auth.dto';
+import * as argon from 'argon2';
+
+@Injectable()
+export class AuthService {
+    constructor(private prisma: PrismaService) {}
+    async signup(dto: AuthDto) {
+
+        // ハッシュ化されたパスワードを作成
+        const hash = await argon.hash(dto.password)
+
+        // データベースに新しいユーザを保存する。例外処理を行う
+        try {
+          const user = await this.prisma.user.create({
+            data: {
+                email: dto.email,
+                hash,
+            },
+          })
+
+          delete user.hash
+
+          // ユーザの値を返す
+          return user
+        }
+    }
+
+    signin() {
+        return { msg: 'I have signed in' }
+    }
+}
+```
+
+サインアップを円滑に行うために、`schema.prisma`を編集する
+
+`schema.prisma`
+
+```prisma
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  email String @unique
+  hash String
+
+  firstname String?
+  lastname String?
+
+  // userIdとBookmarkを連携させる
+  bookmarks Bookmark[]
+  @@map("users")
+}
+
+model Bookmark {
+  id Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String
+  description String?
+  link String
+
+  // userIdとBookmarkを連携させる
+  userId Int
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("bookmarks")
+}
+```
+
+完成させたら以下のコマンドを入力する
+
+```
+npx prisma migrate dev
+```
+
+その際、以下の文字が表示される。ここは適当に入力する
+
+```
+√ Enter a name for the new migration: ... update models
+```
+
+データベースを修正し終えたら、以下のコマンドを入力する
+
+`auth.serive.ts`
+
+```ts
+// 必要なモジュールをインポートする
+import { ForbiddenException, Injectable } from "@nestjs/common";
+import { PrismaService } from '../prisma/prisma.service';
+import { AuthDto } from './dto/auth.dto';
+import * as argon from 'argon2';
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime";
+
+@Injectable()
+export class AuthService {
+    constructor(private prisma: PrismaService) {}
+    async signup(dto: AuthDto) {
+
+        // ハッシュ化されたパスワードを作成。このとき、非同期通信で実装することに注意しながら書く
+        const hash = await argon.hash(dto.password)
+
+        try {
+            // データベースに新しいユーザを保存する
+            const user = await this.prisma.user.create({
+                data: {
+                    email: dto.email,
+                    hash,
+                },
+            })
+
+            delete user.hash
+
+            // ユーザの値を返す
+            return user
+        } catch(error) {
+            if (error instanceof PrismaClientKnownRequestError) {
+                if (error.code === 'P2002') {
+                    throw new ForbiddenException('Credentials taken')
+                }
+            
+            throw error
+            }
+        }
+    }
+
+    signin() {
+        return { msg: 'I have signed in' }
+    }
+}
+```
 
 # 余談
 
