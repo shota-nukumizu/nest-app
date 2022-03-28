@@ -691,6 +691,54 @@ export class AuthController {
 }
 ```
 
+# NestJSの`Pipes`を活用する
+
+NestJSにおける`Pipes`には主に２つの機能がある。
+
+* **変換**：入力されたデータを目的の形式に変換する
+* **検証**：入力されたデータを評価。有効な場合はそのまま渡し、そうではない場合はデータが不正確な場合に例外を投げる
+
+NestJSにはいくつかの組み込み`Pipes`が用意されており、すぐに使えるようになっている。また、独自のカスタム`Pipes`を用意できる。
+
+以下のコマンドで`class-validator`と`class-transformer`をインストールする
+
+```
+npm i --save class-validator class-transformer
+```
+
+`auth.dto.ts`
+
+```ts
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator'
+
+export class AuthDto {
+    @IsEmail()
+    @IsNotEmpty()
+    email: string
+
+    @IsString()
+    @IsNotEmpty()
+    password: string
+}
+```
+
+`main.ts`
+
+```ts
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  // このように書くことでデータを有効化できるようになる
+  app.useGlobalPipes(new ValidationPipe());
+  await app.listen(3000);
+}
+bootstrap();
+
+```
+
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
