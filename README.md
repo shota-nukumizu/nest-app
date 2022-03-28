@@ -461,6 +461,150 @@ npx prisma studio
 
 ![データベース表示デモ](demo.png)
 
+# `Prisma`モジュールの作成
+
+まず`prisma`モジュールを作成する
+
+```
+nest g module prisma
+```
+
+▼作成されるファイル
+
+```
+CREATE src/prisma/prisma.module.ts (83 bytes)
+UPDATE src/app.module.ts (362 bytes)
+```
+
+次に、`prisma`サービスを作成する
+
+```
+nest g service prisma --no-spec
+```
+
+▼作成されるファイル
+
+```
+CREATE src/prisma/prisma.service.ts (90 bytes)
+UPDATE src/prisma/prisma.module.ts (163 bytes)
+```
+
+`src/prisma/prisma.service.ts`
+
+```ts
+import { Injectable } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+
+@Injectable()
+export class PrismaService extends PrismaClient {
+    constructor() {
+        super({
+            datasources: {
+                db: {
+                    url: 'file:./dev.db'
+                }
+            }
+        })
+    }
+}
+```
+
+`auth.module.ts`
+
+```ts
+import { Module } from "@nestjs/common";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+
+// VSCodeで「PrismaModule」を入力すると勝手に出力される
+import { PrismaModule } from '../prisma/prisma.module';
+
+
+@Module({
+  imports: [PrismaModule], // 追加。
+  controllers: [AuthController],
+  providers: [AuthService]
+})
+export class AuthModule {}
+```
+
+`auth.service.ts`
+
+```ts
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable({})
+export class AuthService {
+    constructor(private prisma: PrismaService) {
+        
+    }
+    signup() {
+        return { msg: 'I have signed up' }
+    }
+
+    signin() {
+        return { msg: 'I have signed in' }
+    }
+}
+```
+
+しかし、このように先に`PrismaService`をインポートしてしまうと`ExpectionHandler Error`が出力されてしまうので、先に`AuthModule`にて`PrismaService`をインポートしておく必要がある。
+
+`prisma.module.ts`
+
+```ts
+import { Module } from '@nestjs/common';
+import { PrismaService } from './prisma.service';
+
+@Module({
+  providers: [PrismaService],
+  exports: [PrismaService] // 追加
+})
+export class PrismaModule {}
+```
+
+`auth.module.ts`
+
+```ts
+import { Global, Module } from "@nestjs/common";
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
+
+@Global() // 追加
+@Module({
+  controllers: [AuthController],
+  providers: [AuthService]
+})
+export class AuthModule {}
+```
+
+`auth.controller.ts`
+
+```ts
+import { Controller, Post, Req } from "@nestjs/common";
+import { Request } from "express";
+import { AuthService } from "./auth.service";
+
+@Controller('auth')
+export class AuthController {
+    constructor(private authService: AuthService) {
+    }
+
+    // Reqモジュールを作成してデコレータを作成して、Requestの内容を可視化する
+    @Post('signup')
+    signup(@Req() req: Request) {
+        console.log(req.body)
+        return this.authService.signup()
+    }
+
+    @Post('signin')
+    signin() {
+        return this.authService.signin()
+    }
+}
+```
+
 # 余談
 
 Nestはディレクトリや設計思想がAngularにそっくりである。Angularの開発経験があれば簡単に導入できそうだ。(しかもデフォルトでTypeScriptの開発ができる。**Angularをバックエンドで実装するような感じがしてめちゃくちゃおもしろい**)
